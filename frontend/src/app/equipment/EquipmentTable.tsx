@@ -115,6 +115,27 @@ export default function EquipmentTable() {
     setSubmitError(null);
   };
 
+  const defaultForm = {
+    name: "",
+    manufacturer: "",
+    model: "",
+    serial: "",
+    location: "",
+    department: "",
+    status: "",
+    risk: "",
+    serviceLocation: "",
+    operator: "",
+    condition: "",
+    lifespan: "",
+    power: "",
+    purchaseDate: "",
+    warrantyExpiry: "",
+    maintenanceInterval: "",
+    lastMaintenanceDate: "",
+    notes: ""
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitLoading(true);
@@ -126,7 +147,7 @@ export default function EquipmentTable() {
         await axios.post("http://localhost:4000/api/equipment", form);
       }
       closeModal();
-      setForm({ manufacturer: "", model: "", serial: "", location: "", status: "" });
+      setForm(defaultForm);
       fetchEquipment();
     } catch (err: any) {
       setSubmitError(err.message || "Failed to save equipment");
@@ -323,7 +344,7 @@ export default function EquipmentTable() {
                   borderBottom: '1px solid #eee',
                   background: idx % 2 === 0 ? '#fff' : '#f7f8fa',
                   transition: 'background 0.2s',
-                  ':hover': { background: '#f0f1fa' }
+                  // ':hover': { background: '#f0f1fa' }
                 }}>
                   
                   <td style={{ padding: 10 }}>{eq.name || '-'}</td>
