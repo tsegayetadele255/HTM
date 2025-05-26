@@ -37,7 +37,7 @@ export default function AuditLogsPage() {
         setLogs(res.data);
         setLoading(false);
       })
-      .catch(e => {
+      .catch(() => {
         setError("Failed to load audit logs");
         setLoading(false);
       });
@@ -89,7 +89,7 @@ export default function AuditLogsPage() {
     setSubmitLoading(true);
     setSubmitError(null);
     try {
-      const payload: any = {
+      const payload = {
         action: form.action,
         entityType: form.entityType,
         entityId: form.entityId ? Number(form.entityId) : undefined,
@@ -114,7 +114,15 @@ export default function AuditLogsPage() {
         timerProgressBar: true
       });
       fetchLogs();
-    } catch (err: any) {
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setSubmitError(err.message);
+        Swal.fire('Failed', err.message, 'error');
+      } else {
+        setSubmitError('Failed to save audit log');
+        Swal.fire('Failed', 'Failed to save audit log', 'error');
+      }
+    
       setSubmitError(err.response?.data?.error || err.message || 'Failed to save audit log');
       Swal.fire('Failed', err.response?.data?.error || err.message || 'Failed to save audit log', 'error');
     } finally {
@@ -147,7 +155,9 @@ export default function AuditLogsPage() {
         timerProgressBar: true
       });
       fetchLogs();
-    } catch (err) {
+    } catch {
+      Swal.fire('Failed', 'Failed to delete audit log', 'error');
+    
       Swal.fire('Failed', 'Failed to delete audit log', 'error');
     }
   }
