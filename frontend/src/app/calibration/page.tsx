@@ -64,10 +64,14 @@ const [equipmentList, setEquipmentList] = useState<EquipmentSummary[]>([]);
   }
 
   useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  useEffect(() => {
     fetchRecords();
     fetchEquipment();
     fetchUsers();
-  }, []);
+  }, [fetchEquipment, fetchUsers]);
 
   function openAddModal() {
     setEditId(null);

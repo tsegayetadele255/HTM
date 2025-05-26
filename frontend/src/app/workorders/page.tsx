@@ -130,9 +130,17 @@ export default function WorkOrdersPage() {
         timerProgressBar: true
       });
       fetchWorkOrders();
-    } catch (err: any) {
-      setSubmitError(err.response?.data?.error || err.message || 'Failed to create work order');
-      Swal.fire('Failed', err.response?.data?.error || err.message || 'Failed to create work order', 'error');
+    } catch (err: unknown) {
+      if (typeof err === 'object' && err !== null && 'response' in err && typeof (err as any).response?.data?.error === 'string') {
+        setSubmitError((err as any).response.data.error);
+        Swal.fire('Failed', (err as any).response.data.error, 'error');
+      } else if (err instanceof Error) {
+        setSubmitError(err.message);
+        Swal.fire('Failed', err.message, 'error');
+      } else {
+        setSubmitError('Failed to create work order');
+        Swal.fire('Failed', 'Failed to create work order', 'error');
+      }
     } finally {
       setSubmitLoading(false);
     }

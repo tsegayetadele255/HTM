@@ -168,7 +168,7 @@ export default function UsersPage() {
         timerProgressBar: true
       });
       fetchUsers();
-    } catch (err) {
+    } catch {
       Swal.fire('Failed', 'Failed to delete user', 'error');
     }
   }

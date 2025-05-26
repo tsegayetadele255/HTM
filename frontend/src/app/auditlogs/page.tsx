@@ -51,9 +51,13 @@ const [usersList, setUsersList] = useState<UserSummary[]>([]);
   }
 
   useEffect(() => {
-    fetchLogs();
     fetchUsers();
   }, []);
+
+  useEffect(() => {
+    fetchLogs();
+    fetchUsers();
+  }, [fetchUsers]);
 
   function openAddModal() {
     setEditId(null);
