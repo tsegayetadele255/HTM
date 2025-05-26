@@ -33,7 +33,7 @@ const [usersList, setUsersList] = useState<UserSummary[]>([]);
 
   function fetchLogs() {
     setLoading(true);
-    axios.get("http://localhost:4000/api/auditlogs")
+    axios.get(process.env.NEXT_PUBLIC_API_URL + "/api/auditlogs")
       .then(res => {
         setLogs(res.data);
         setLoading(false);
@@ -45,7 +45,7 @@ const [usersList, setUsersList] = useState<UserSummary[]>([]);
   }
 
   function fetchUsers() {
-    axios.get("http://localhost:4000/api/users")
+    axios.get(process.env.NEXT_PUBLIC_API_URL + "/api/users")
       .then(res => setUsersList(res.data.map((u: UserSummary) => ({ id: u.id, username: u.username }))))
       .catch(() => setUsersList([]));
   }
@@ -104,9 +104,9 @@ const [usersList, setUsersList] = useState<UserSummary[]>([]);
       if (!payload.action) throw new Error('Action is required');
       if (form.userId && !payload.userId) throw new Error('Invalid user');
       if (editId) {
-        await axios.put(`http://localhost:4000/api/auditlogs/${editId}`, payload);
+        await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/auditlogs/${editId}`, payload);
       } else {
-        await axios.post("http://localhost:4000/api/auditlogs", payload);
+        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/auditlogs`, payload);
       }
       closeModal();
       Swal.fire({
@@ -146,7 +146,7 @@ const [usersList, setUsersList] = useState<UserSummary[]>([]);
     });
     if (!result.isConfirmed) return;
     try {
-      await axios.delete(`http://localhost:4000/api/auditlogs/${id}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/auditlogs/${id}`);
       Swal.fire({
         toast: true,
         position: 'bottom',

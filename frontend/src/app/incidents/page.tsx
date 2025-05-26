@@ -46,7 +46,7 @@ export default function IncidentsPage() {
 
   function fetchIncidents() {
     setLoading(true);
-    axios.get("http://localhost:4000/api/incidents")
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/incidents`)
       .then(res => {
         setIncidents(res.data);
         setLoading(false);
@@ -58,13 +58,13 @@ export default function IncidentsPage() {
   }
 
   function fetchEquipment() {
-    axios.get("http://localhost:4000/api/equipment")
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/equipment`)
       .then(res => setEquipmentList(res.data.map((e: EquipmentSummary) => ({ id: e.id, name: e.name }))))
       .catch(() => setEquipmentList([]));
   }
 
   function fetchUsers() {
-    axios.get("http://localhost:4000/api/users")
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users`)
       .then(res => setUsersList(res.data.map((u: UserSummary) => ({ id: u.id, username: u.username }))))
       .catch(() => setUsersList([]));
   }
@@ -121,9 +121,9 @@ export default function IncidentsPage() {
       };
       if (!payload.relatedEquipmentId || !payload.reportedById) throw new Error('Equipment and Reporter are required');
       if (editId) {
-        await axios.put(`http://localhost:4000/api/incidents/${editId}`, payload);
+        await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/incidents/${editId}`, payload);
       } else {
-        await axios.post("http://localhost:4000/api/incidents", payload);
+        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/incidents`, payload);
       }
       closeModal();
       Swal.fire({
@@ -167,7 +167,7 @@ export default function IncidentsPage() {
     });
     if (!result.isConfirmed) return;
     try {
-      await axios.delete(`http://localhost:4000/api/incidents/${id}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/incidents/${id}`);
       Swal.fire({
         toast: true,
         position: 'bottom',

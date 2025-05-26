@@ -142,9 +142,9 @@ export default function EquipmentTable() {
     setSubmitError(null);
     try {
       if (editId) {
-        await axios.put(`http://localhost:4000/api/equipment/${editId}`, form);
+        await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/equipment/${editId}`, form);
       } else {
-        await axios.post("http://localhost:4000/api/equipment", form);
+        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/equipment`, form);
       }
       closeModal();
       setForm(defaultForm);
@@ -176,7 +176,7 @@ export default function EquipmentTable() {
     if (result.isConfirmed) {
       setDeleteLoading(id);
       try {
-        await axios.delete(`http://localhost:4000/api/equipment/${id}`);
+        await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/equipment/${id}`);
         fetchEquipment();
         Swal.fire({
           toast: true,
@@ -198,7 +198,7 @@ export default function EquipmentTable() {
   async function fetchEquipment() {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:4000/api/equipment");
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/equipment`);
       setEquipment(res.data);
     } catch (err: unknown) {
       if (err instanceof Error) {

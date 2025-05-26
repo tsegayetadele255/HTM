@@ -70,7 +70,7 @@ export default function WorkOrdersPage() {
 
   function fetchWorkOrders() {
     setLoading(true);
-    axios.get("http://localhost:4000/api/workorders")
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/workorders`)
       .then(res => {
         setWorkOrders(res.data);
         setLoading(false);
@@ -83,8 +83,8 @@ export default function WorkOrdersPage() {
 
   useEffect(() => {
     fetchWorkOrders();
-    axios.get("http://localhost:4000/api/equipment").then(res => setEquipmentList(res.data));
-    axios.get("http://localhost:4000/api/users").then(res => setUsersList(res.data));
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/equipment`).then(res => setEquipmentList(res.data));
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users`).then(res => setUsersList(res.data));
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -117,7 +117,7 @@ export default function WorkOrdersPage() {
       if (form.assignedTechnicianId) payload.assignedTechnicianId = Number(form.assignedTechnicianId);
       if (form.equipmentId) payload.equipmentId = Number(form.equipmentId);
       if (form.faultReportedById) payload.faultReportedById = Number(form.faultReportedById);
-      await axios.post("http://localhost:4000/api/workorders", payload);
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/workorders`, payload);
       closeModal();
       setForm({ description: '', status: '', priority: '', assignedTechnicianId: '', equipmentId: '', faultReportedById: '', maintenanceType: '', repairCost: '', repairTime: '', reason: '', solution: '' });
       Swal.fire({

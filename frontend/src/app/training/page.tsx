@@ -40,7 +40,7 @@ const [usersList, setUsersList] = useState<UserSummary[]>([]);
 
   function fetchRecords() {
     setLoading(true);
-    axios.get("http://localhost:4000/api/training")
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/training`)
       .then(res => {
         setRecords(res.data);
         setLoading(false);
@@ -52,7 +52,7 @@ const [usersList, setUsersList] = useState<UserSummary[]>([]);
   }
 
   function fetchUsers() {
-    axios.get("http://localhost:4000/api/users")
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users`)
       .then(res => setUsersList(res.data.map((u: UserSummary) => ({ id: u.id, username: u.username }))))
       .catch(() => setUsersList([]));
   }
@@ -112,9 +112,9 @@ const [usersList, setUsersList] = useState<UserSummary[]>([]);
       };
       if (!payload.traineeId || !payload.trainerId) throw new Error('Trainee and Trainer are required');
       if (editId) {
-        await axios.put(`http://localhost:4000/api/training/${editId}`, payload);
+        await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/training/${editId}`, payload);
       } else {
-        await axios.post("http://localhost:4000/api/training", payload);
+        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/training`, payload);
       }
       closeModal();
       Swal.fire({
@@ -158,7 +158,7 @@ const [usersList, setUsersList] = useState<UserSummary[]>([]);
     });
     if (!result.isConfirmed) return;
     try {
-      await axios.delete(`http://localhost:4000/api/training/${id}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/training/${id}`);
       Swal.fire({
         toast: true,
         position: 'bottom',

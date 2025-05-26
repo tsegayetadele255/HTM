@@ -36,7 +36,7 @@ const [usersList, setUsersList] = useState<UserSummary[]>([]);
 
   function fetchSOPs() {
     setLoading(true);
-    axios.get("http://localhost:4000/api/sops")
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/sops`)
       .then(res => {
         setSOPs(res.data);
         setLoading(false);
@@ -48,7 +48,7 @@ const [usersList, setUsersList] = useState<UserSummary[]>([]);
   }
 
   function fetchUsers() {
-    axios.get("http://localhost:4000/api/users")
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users`)
       .then(res => setUsersList(res.data.map((u: UserSummary) => ({ id: u.id, username: u.username }))))
       .catch(() => setUsersList([]));
   }
@@ -104,9 +104,9 @@ const [usersList, setUsersList] = useState<UserSummary[]>([]);
       };
       if (!payload.createdById) throw new Error('Creator is required');
       if (editId) {
-        await axios.put(`http://localhost:4000/api/sops/${editId}`, payload);
+        await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/sops/${editId}`, payload);
       } else {
-        await axios.post("http://localhost:4000/api/sops", payload);
+        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/sops`, payload);
       }
       closeModal();
       Swal.fire({
@@ -150,7 +150,7 @@ const [usersList, setUsersList] = useState<UserSummary[]>([]);
     });
     if (!result.isConfirmed) return;
     try {
-      await axios.delete(`http://localhost:4000/api/sops/${id}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/sops/${id}`);
       Swal.fire({
         toast: true,
         position: 'bottom',

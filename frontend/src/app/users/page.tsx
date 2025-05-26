@@ -45,7 +45,7 @@ export default function UsersPage() {
 
   function fetchUsers() {
     setLoading(true);
-    axios.get("http://localhost:4000/api/users")
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users`)
       .then(res => {
         setUsers(res.data);
         setLoading(false);
@@ -111,10 +111,10 @@ export default function UsersPage() {
       };
       if (form.password) payload.password = form.password;
       if (editId) {
-        await axios.put(`http://localhost:4000/api/users/${editId}`, payload);
+        await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${editId}`, payload);
       } else {
         if (!form.password) throw new Error('Password is required');
-        await axios.post("http://localhost:4000/api/users", payload);
+        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users`, payload);
       }
       closeModal();
       Swal.fire({
@@ -157,7 +157,7 @@ export default function UsersPage() {
     });
     if (!result.isConfirmed) return;
     try {
-      await axios.delete(`http://localhost:4000/api/users/${id}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}`);
       Swal.fire({
         toast: true,
         position: 'bottom',

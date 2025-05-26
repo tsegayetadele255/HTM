@@ -48,7 +48,7 @@ export default function DisposalsPage() {
 
   function fetchRecords() {
     setLoading(true);
-    axios.get("http://localhost:4000/api/disposals")
+    axios.get(process.env.NEXT_PUBLIC_API_URL + "/api/disposals")
       .then(res => {
         setRecords(res.data);
         setLoading(false);
@@ -60,13 +60,13 @@ export default function DisposalsPage() {
   }
 
   function fetchEquipment() {
-    axios.get("http://localhost:4000/api/equipment")
+    axios.get(process.env.NEXT_PUBLIC_API_URL + "/api/equipment")
       .then(res => setEquipmentList(res.data.map((e: EquipmentSummary) => ({ id: e.id, name: e.name }))))
       .catch(() => setEquipmentList([]));
   }
 
   function fetchUsers() {
-    axios.get("http://localhost:4000/api/users")
+    axios.get(process.env.NEXT_PUBLIC_API_URL + "/api/users")
       .then(res => setUsersList(res.data.map((u: UserSummary) => ({ id: u.id, username: u.username }))))
       .catch(() => setUsersList([]));
   }
@@ -127,9 +127,9 @@ export default function DisposalsPage() {
         throw new Error('All required fields must be filled');
       }
       if (editId) {
-        await axios.put(`http://localhost:4000/api/disposals/${editId}`, payload);
+        await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/disposals/${editId}`, payload);
       } else {
-        await axios.post("http://localhost:4000/api/disposals", payload);
+        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/disposals`, payload);
       }
       closeModal();
       Swal.fire({
@@ -187,7 +187,7 @@ export default function DisposalsPage() {
     });
     if (!result.isConfirmed) return;
     try {
-      await axios.delete(`http://localhost:4000/api/disposals/${id}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/disposals/${id}`);
       Swal.fire({
         toast: true,
         position: 'bottom',

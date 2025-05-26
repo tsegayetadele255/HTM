@@ -40,7 +40,7 @@ const [equipmentList, setEquipmentList] = useState<EquipmentSummary[]>([]);
 
   function fetchRecords() {
     setLoading(true);
-    axios.get("http://localhost:4000/api/calibration")
+    axios.get(process.env.NEXT_PUBLIC_API_URL + "/api/calibration")
       .then(res => {
         setRecords(res.data);
         setLoading(false);
@@ -52,13 +52,13 @@ const [equipmentList, setEquipmentList] = useState<EquipmentSummary[]>([]);
   }
 
   function fetchEquipment() {
-    axios.get("http://localhost:4000/api/equipment")
+    axios.get(process.env.NEXT_PUBLIC_API_URL + "/api/equipment")
       .then(res => setEquipmentList(res.data.map((e: EquipmentSummary) => ({ id: e.id, name: e.name }))))
       .catch(() => setEquipmentList([]));
   }
 
   function fetchUsers() {
-    axios.get("http://localhost:4000/api/users")
+    axios.get(process.env.NEXT_PUBLIC_API_URL + "/api/users")
       .then(res => setUsersList(res.data.map((u: UserSummary) => ({ id: u.id, username: u.username }))))
       .catch(() => setUsersList([]));
   }
@@ -121,9 +121,9 @@ const [equipmentList, setEquipmentList] = useState<EquipmentSummary[]>([]);
       };
       if (!payload.equipmentId || !payload.performedById) throw new Error('Equipment and Performed By are required');
       if (editId) {
-        await axios.put(`http://localhost:4000/api/calibration/${editId}`, payload);
+        await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/calibration/${editId}`, payload);
       } else {
-        await axios.post("http://localhost:4000/api/calibration", payload);
+        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/calibration`, payload);
       }
       closeModal();
       Swal.fire({
@@ -163,7 +163,7 @@ const [equipmentList, setEquipmentList] = useState<EquipmentSummary[]>([]);
     });
     if (!result.isConfirmed) return;
     try {
-      await axios.delete(`http://localhost:4000/api/calibration/${id}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/calibration/${id}`);
       Swal.fire({
         toast: true,
         position: 'bottom',

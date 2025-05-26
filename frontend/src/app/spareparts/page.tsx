@@ -23,7 +23,7 @@ export default function SparePartsPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    axios.get('http://localhost:4000/api/spareparts')
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/spareparts`)
       .then(res => {
         setSpareParts(res.data);
         setLoading(false);
@@ -83,7 +83,7 @@ export default function SparePartsPage() {
     if (!result.isConfirmed) return;
     setDeleteLoading(id);
     try {
-      await axios.delete(`http://localhost:4000/api/spareparts/${id}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/spareparts/${id}`);
       setSpareParts(parts => parts.filter(p => p.id !== id));
       Swal.fire({
         toast: true,
@@ -108,7 +108,7 @@ export default function SparePartsPage() {
   const [equipmentList, setEquipmentList] = useState<EquipmentSummary[]>([]);
 
   useEffect(() => {
-    axios.get('http://localhost:4000/api/equipment')
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/equipment`)
       .then(res => {
         setEquipmentList(res.data);
       });
@@ -150,9 +150,9 @@ export default function SparePartsPage() {
         linkedEquipmentId: form.linkedEquipmentId ? Number(form.linkedEquipmentId) : undefined
       };
       if (editId) {
-        await axios.put(`http://localhost:4000/api/spareparts/${editId}`, payload);
+        await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/spareparts/${editId}`, payload);
       } else {
-        await axios.post('http://localhost:4000/api/spareparts', payload);
+        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/spareparts`, payload);
       }
       closeModal();
       setForm({ name: '', stockLevel: '', expiryDate: '', location: '', manufacturer: '', minStockLevel: '', maxStockLevel: '', equipmentType: '', partNumber: '', linkedEquipmentId: '' });
@@ -166,7 +166,7 @@ export default function SparePartsPage() {
         timerProgressBar: true
       });
       setLoading(true);
-      axios.get('http://localhost:4000/api/spareparts')
+      axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/spareparts`)
         .then(res => {
           setSpareParts(res.data);
           setLoading(false);
