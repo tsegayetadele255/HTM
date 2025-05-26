@@ -1,5 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
+// Extend Equipment type locally for dashboard logic
+import type { Equipment as EquipmentBase } from "../equipment/EquipmentTable";
+type Equipment = EquipmentBase & { nextCalibrationDate?: string };
+
 import Image from "next/image";
 import axios from "axios";
 
@@ -66,16 +70,12 @@ export default function DashboardPage() {
           axios.get("/api/procurement"),
           axios.get("/api/incidents"),
         ]);
-        const equipment = equipRes.data || [];
-        const workOrders = workOrderRes.data || [];
-        const procurements = procurementRes.data || [];
-        const incidents = incidentRes.data || [];
-        // Debug: Log equipment data
+        const equipment: Equipment[] = equipRes.data || [];
+        const workOrders: { status?: string }[] = workOrderRes.data || [];
+        const procurements: { status?: string }[] = procurementRes.data || [];
+        const incidents: unknown[] = incidentRes.data || [];
         console.log('Fetched equipment:', equipment);
-        // Scheduled calibrations: count equipment with nextCalibrationDate in the future
-        const scheduledCalibrations = equipment.filter((e: any) => e.nextCalibrationDate && new Date(e.nextCalibrationDate) > new Date()).length;
-        // Pie chart values by status
-        // Flexible status mapping for various possible status values
+        const scheduledCalibrations = equipment.filter(e => e.nextCalibrationDate && new Date(e.nextCalibrationDate) > new Date()).length;
         const statusMap: Record<string, "Active" | "Inactive" | "Under Maintenance" | "Decommissioned"> = {
           "active": "Active",
           "Active": "Active",
@@ -92,7 +92,7 @@ export default function DashboardPage() {
           // Add more mappings as needed
         };
         const statusCounts: Record<string, number> = { Active: 0, Inactive: 0, "Under Maintenance": 0, Decommissioned: 0 };
-        equipment.forEach((e: any) => {
+        equipment.forEach(e => {
           const rawStatus = (e.status || "").toString().trim();
           const mappedStatus = statusMap[rawStatus];
           if (mappedStatus) {
@@ -103,8 +103,8 @@ export default function DashboardPage() {
         });
         setSummaryData([
           { value: equipment.length },
-          { value: workOrders.filter((w: any) => w.status === 'Active' || w.status === 'Open').length },
-          { value: procurements.filter((p: any) => p.status === 'Pending').length },
+          { value: workOrders.filter(w => w.status === 'Active' || w.status === 'Open').length },
+          { value: procurements.filter(p => p.status === 'Pending').length },
           { value: incidents.length },
           { value: scheduledCalibrations },
         ]);
@@ -177,7 +177,7 @@ export default function DashboardPage() {
   <EquipmentStatusPieChart data={chartData} />
 </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {chartData.map((d: {label: string, value: number, color: string}, i: number) => (
+              {chartData.map((d: {label: string, value: number, color: string}) => (
                 <div key={d.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
                   <span style={{ display: "inline-block", width: 18, height: 18, borderRadius: 5, background: d.color }}></span>
                   <span style={{ fontWeight: 600, color: "#222", minWidth: 120 }}>{d.label}</span>
@@ -204,4 +204,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
