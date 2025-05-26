@@ -143,10 +143,22 @@ export default function DisposalsPage() {
       });
       fetchRecords();
     } catch (err: unknown) {
-      if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object' && 'error' in err.response.data) {
-        const errorMsg = (err as AxiosError)?.response?.data && typeof (err as AxiosError).response?.data === 'object' && 'error' in (err as AxiosError).response?.data
-          ? ((err as AxiosError).response?.data as { error: string }).error
-          : undefined;
+      function isAxiosErrorWithMessage(error: unknown): error is { response: { data: { error: string } } } {
+        return (
+          typeof error === 'object' &&
+          error !== null &&
+          'response' in error &&
+          typeof (error as { response?: unknown }).response === 'object' &&
+          (error as { response?: { data?: unknown } }).response !== null &&
+          'data' in (error as { response: { data?: unknown } }).response &&
+          typeof ((error as { response: { data?: unknown } }).response as { data?: unknown }).data === 'object' &&
+          ((error as { response: { data: { error?: unknown } } }).response.data as { error?: unknown }).error !== undefined &&
+          typeof ((error as { response: { data: { error?: unknown } } }).response.data as { error?: unknown }).error === 'string'
+        );
+      }
+
+      if (isAxiosErrorWithMessage(err)) {
+        const errorMsg = err.response.data.error;
         setSubmitError(errorMsg || 'Failed to save disposal record');
         Swal.fire('Failed', errorMsg || 'Failed to save disposal record', 'error');
       } else if (err instanceof Error) {
