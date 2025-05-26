@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { AuditLog } from '../models/AuditLog';
+import { User } from '../models/User';
 import { AppDataSource } from '../utils/data-source';
 
 export const getAllAuditLogs = async (req: Request, res: Response) => {
@@ -18,7 +19,7 @@ export const getOneAuditLog = async (req: Request, res: Response) => {
 
 export const createAuditLog = async (req: Request, res: Response) => {
   const repo = AppDataSource.getRepository(AuditLog);
-  const userRepo = AppDataSource.getRepository('User');
+  const userRepo = AppDataSource.getRepository(User);
   const { action, entityType, entityId, details, userId } = req.body;
 
   let user: any = undefined;
@@ -34,7 +35,7 @@ export const createAuditLog = async (req: Request, res: Response) => {
 
 export const updateAuditLog = async (req: Request, res: Response) => {
   const repo = AppDataSource.getRepository(AuditLog);
-  const userRepo = AppDataSource.getRepository('User');
+  const userRepo = AppDataSource.getRepository(User);
   const { id } = req.params;
   let log = await repo.findOne({ where: { id: Number(id) }, relations: ['user'] });
   if (!log) return res.status(404).json({ error: 'Audit log not found' });
@@ -42,8 +43,9 @@ export const updateAuditLog = async (req: Request, res: Response) => {
   const { action, entityType, entityId, details, userId } = req.body;
   let user = log.user;
   if (userId !== undefined) {
-    user = await userRepo.findOneBy({ id: userId });
-    if (!user) return res.status(400).json({ error: 'User not found' });
+    const foundUser = await userRepo.findOneBy({ id: userId });
+    if (!foundUser) return res.status(400).json({ error: 'User not found' });
+    user = foundUser;
   }
   repo.merge(log, { action, entityType, entityId, details, user });
   await repo.save(log);
