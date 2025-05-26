@@ -72,7 +72,7 @@ export default function DashboardPage() {
         // Debug: Log equipment data
         console.log('Fetched equipment:', equipment);
         // Scheduled calibrations: count equipment with nextCalibrationDate in the future
-        const scheduledCalibrations = equipment.filter((e: any) => e.nextCalibrationDate && new Date(e.nextCalibrationDate) > new Date()).length;
+        const scheduledCalibrations = equipment.filter((e: unknown) => e.nextCalibrationDate && new Date(e.nextCalibrationDate) > new Date()).length;
         // Pie chart values by status
         // Flexible status mapping for various possible status values
         const statusMap: Record<string, "Active" | "Inactive" | "Under Maintenance" | "Decommissioned"> = {
@@ -91,7 +91,7 @@ export default function DashboardPage() {
           // Add more mappings as needed
         };
         const statusCounts: Record<string, number> = { Active: 0, Inactive: 0, "Under Maintenance": 0, Decommissioned: 0 };
-        equipment.forEach((e: any) => {
+        equipment.forEach((e: unknown) => {
           const rawStatus = (e.status || "").toString().trim();
           const mappedStatus = statusMap[rawStatus];
           if (mappedStatus) {
@@ -102,8 +102,8 @@ export default function DashboardPage() {
         });
         setSummaryData([
           { value: equipment.length },
-          { value: workOrders.filter((w: any) => w.status === 'Active' || w.status === 'Open').length },
-          { value: procurements.filter((p: any) => p.status === 'Pending').length },
+          { value: workOrders.filter((w: unknown) => w.status === 'Active' || w.status === 'Open').length },
+          { value: procurements.filter((p: unknown) => p.status === 'Pending').length },
           { value: incidents.length },
           { value: scheduledCalibrations },
         ]);
@@ -114,7 +114,9 @@ export default function DashboardPage() {
           { label: "Decommissioned", value: statusCounts.Decommissioned, color: PIE_COLORS.Decommissioned },
         ]);
 
-      } catch (e) {
+      } catch {
+        setError("Failed to load dashboard data");
+      }
         setError("Failed to load dashboard data");
       } finally {
         setLoading(false);
@@ -127,7 +129,7 @@ export default function DashboardPage() {
     <div style={{ padding: "2.5rem 0", width: "100%", background: "#f7f8fa", minHeight: "100vh" }}>
       {/* Branding and Welcome */}
       <div style={{ display: "flex", alignItems: "center", gap: 36, marginBottom: 38 }}>
-        <img src="/vascular-cmms-logo.png" alt="Vascular CMMS Logo" style={{ width: 64, height: 64, borderRadius: 18, background: '#fff', boxShadow: '0 2px 8px #0001' }} />
+        <Image src="/vascular-cmms-logo.png" alt="Vascular CMMS Logo" style={{ width: 64, height: 64, borderRadius: 18, background: '#fff', boxShadow: '0 2px 8px #0001' }} />
         <div>
           <h1 style={{ margin: 0, fontSize: 34, fontWeight: 800, letterSpacing: 0.5, color: "#2d5be3" }}>Vascular Equipment CMMS</h1>
           <div style={{ fontSize: 18, color: "#3a3c4f", marginTop: 8, fontWeight: 500 }}>

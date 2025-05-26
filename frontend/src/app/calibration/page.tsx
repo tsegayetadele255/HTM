@@ -43,7 +43,7 @@ export default function CalibrationPage() {
         setRecords(res.data);
         setLoading(false);
       })
-      .catch(e => {
+      .catch(() => {
         setError("Failed to load calibration records");
         setLoading(false);
       });
@@ -104,7 +104,7 @@ export default function CalibrationPage() {
     setSubmitLoading(true);
     setSubmitError(null);
     try {
-      const payload: any = {
+      const payload = {
         equipmentId: form.equipmentId ? Number(form.equipmentId) : undefined,
         calibrationDate: form.calibrationDate,
         dueDate: form.dueDate,
@@ -130,7 +130,15 @@ export default function CalibrationPage() {
         timerProgressBar: true
       });
       fetchRecords();
-    } catch (err: any) {
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setSubmitError(err.message);
+        Swal.fire('Failed', err.message, 'error');
+      } else {
+        setSubmitError('Failed to save calibration record');
+        Swal.fire('Failed', 'Failed to save calibration record', 'error');
+      }
+    
       setSubmitError(err.response?.data?.error || err.message || 'Failed to save calibration record');
       Swal.fire('Failed', err.response?.data?.error || err.message || 'Failed to save calibration record', 'error');
     } finally {
@@ -163,7 +171,9 @@ export default function CalibrationPage() {
         timerProgressBar: true
       });
       fetchRecords();
-    } catch (err) {
+    } catch {
+      Swal.fire('Failed', 'Failed to delete calibration record', 'error');
+    
       Swal.fire('Failed', 'Failed to delete calibration record', 'error');
     }
   }
