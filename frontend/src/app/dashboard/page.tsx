@@ -64,11 +64,12 @@ export default function DashboardPage() {
       setLoading(true);
       setError("");
       try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
         const [equipRes, workOrderRes, procurementRes, incidentRes] = await Promise.all([
-          axios.get("/api/equipment"),
-          axios.get("/api/workorders"),
-          axios.get("/api/procurement"),
-          axios.get("/api/incidents"),
+          axios.get(`${apiUrl}/api/equipment`),
+          axios.get(`${apiUrl}/api/workorders`),
+          axios.get(`${apiUrl}/api/procurement`),
+          axios.get(`${apiUrl}/api/incidents`),
         ]);
         const equipment: Equipment[] = equipRes.data || [];
         const workOrders: { status?: string }[] = workOrderRes.data || [];
