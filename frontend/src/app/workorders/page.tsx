@@ -131,9 +131,23 @@ export default function WorkOrdersPage() {
       });
       fetchWorkOrders();
     } catch (err: unknown) {
-      if (typeof err === 'object' && err !== null && 'response' in err && typeof (err as any).response?.data?.error === 'string') {
-        setSubmitError((err as any).response.data.error);
-        Swal.fire('Failed', (err as any).response.data.error, 'error');
+      function isAxiosErrorWithMessage(error: unknown): error is { response: { data: { error: string } } } {
+        return (
+          typeof error === 'object' &&
+          error !== null &&
+          'response' in error &&
+          typeof (error as { response?: unknown }).response === 'object' &&
+          (error as { response?: { data?: unknown } }).response !== null &&
+          'data' in (error as { response: { data?: unknown } }).response &&
+          typeof ((error as { response: { data?: unknown } }).response as { data?: unknown }).data === 'object' &&
+          ((error as { response: { data: { error?: unknown } } }).response.data as { error?: unknown }).error !== undefined &&
+          typeof ((error as { response: { data: { error?: unknown } } }).response.data as { error?: unknown }).error === 'string'
+        );
+      }
+
+      if (isAxiosErrorWithMessage(err)) {
+        setSubmitError(err.response.data.error);
+        Swal.fire('Failed', err.response.data.error, 'error');
       } else if (err instanceof Error) {
         setSubmitError(err.message);
         Swal.fire('Failed', err.message, 'error');
