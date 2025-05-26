@@ -57,7 +57,7 @@ export default function ProcurementPage() {
         setRecords(res.data);
         setLoading(false);
       })
-      .catch(e => {
+      .catch(() => {
         setError("Failed to load procurement records");
         setLoading(false);
       });
@@ -120,7 +120,7 @@ export default function ProcurementPage() {
     setSubmitLoading(true);
     setSubmitError(null);
     try {
-      const payload: any = {
+      const payload = {
         item: form.item,
         amount: form.amount ? Number(form.amount) : undefined,
         description: form.description,
@@ -150,9 +150,18 @@ export default function ProcurementPage() {
         timerProgressBar: true
       });
       fetchRecords();
-    } catch (err: any) {
-      setSubmitError(err.response?.data?.error || err.message || 'Failed to save procurement record');
-      Swal.fire('Failed', err.response?.data?.error || err.message || 'Failed to save procurement record', 'error');
+    } catch (err: unknown) {
+      if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object' && 'error' in err.response.data) {
+        const errorMsg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
+        setSubmitError(errorMsg || 'Failed to save procurement record');
+        Swal.fire('Failed', errorMsg || 'Failed to save procurement record', 'error');
+      } else if (err instanceof Error) {
+        setSubmitError(err.message);
+        Swal.fire('Failed', err.message, 'error');
+      } else {
+        setSubmitError('Failed to save procurement record');
+        Swal.fire('Failed', 'Failed to save procurement record', 'error');
+      }
     } finally {
       setSubmitLoading(false);
     }
@@ -183,7 +192,7 @@ export default function ProcurementPage() {
         timerProgressBar: true
       });
       fetchRecords();
-    } catch (err) {
+    } catch {
       Swal.fire('Failed', 'Failed to delete procurement record', 'error');
     }
   }

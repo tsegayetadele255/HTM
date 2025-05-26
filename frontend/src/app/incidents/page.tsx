@@ -51,7 +51,7 @@ export default function IncidentsPage() {
         setIncidents(res.data);
         setLoading(false);
       })
-      .catch(e => {
+      .catch(() => {
         setError("Failed to load incidents");
         setLoading(false);
       });
@@ -111,7 +111,7 @@ export default function IncidentsPage() {
     setSubmitLoading(true);
     setSubmitError(null);
     try {
-      const payload: any = {
+      const payload = {
         description: form.description,
         severity: form.severity,
         status: form.status,
@@ -136,9 +136,18 @@ export default function IncidentsPage() {
         timerProgressBar: true
       });
       fetchIncidents();
-    } catch (err: any) {
-      setSubmitError(err.response?.data?.error || err.message || 'Failed to save incident');
-      Swal.fire('Failed', err.response?.data?.error || err.message || 'Failed to save incident', 'error');
+    } catch (err: unknown) {
+      if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object' && 'error' in err.response.data) {
+        const errorMsg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
+        setSubmitError(errorMsg || 'Failed to save incident');
+        Swal.fire('Failed', errorMsg || 'Failed to save incident', 'error');
+      } else if (err instanceof Error) {
+        setSubmitError(err.message);
+        Swal.fire('Failed', err.message, 'error');
+      } else {
+        setSubmitError('Failed to save incident');
+        Swal.fire('Failed', 'Failed to save incident', 'error');
+      }
     } finally {
       setSubmitLoading(false);
     }
@@ -169,7 +178,7 @@ export default function IncidentsPage() {
         timerProgressBar: true
       });
       fetchIncidents();
-    } catch (err) {
+    } catch {
       Swal.fire('Failed', 'Failed to delete incident', 'error');
     }
   }

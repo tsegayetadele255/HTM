@@ -41,7 +41,7 @@ const [usersList, setUsersList] = useState<UserSummary[]>([]);
         setSOPs(res.data);
         setLoading(false);
       })
-      .catch(e => {
+      .catch(() => {
         setError("Failed to load SOPs");
         setLoading(false);
       });
@@ -92,7 +92,7 @@ const [usersList, setUsersList] = useState<UserSummary[]>([]);
     setSubmitLoading(true);
     setSubmitError(null);
     try {
-      const payload: any = {
+      const payload = {
         title: form.title,
         content: form.content,
         documentUrl: form.documentUrl,
@@ -115,9 +115,18 @@ const [usersList, setUsersList] = useState<UserSummary[]>([]);
         timerProgressBar: true
       });
       fetchSOPs();
-    } catch (err: any) {
-      setSubmitError(err.response?.data?.error || err.message || 'Failed to save SOP');
-      Swal.fire('Failed', err.response?.data?.error || err.message || 'Failed to save SOP', 'error');
+    } catch (err: unknown) {
+      if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object' && 'error' in err.response.data) {
+        const errorMsg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
+        setSubmitError(errorMsg || 'Failed to save SOP');
+        Swal.fire('Failed', errorMsg || 'Failed to save SOP', 'error');
+      } else if (err instanceof Error) {
+        setSubmitError(err.message);
+        Swal.fire('Failed', err.message, 'error');
+      } else {
+        setSubmitError('Failed to save SOP');
+        Swal.fire('Failed', 'Failed to save SOP', 'error');
+      }
     } finally {
       setSubmitLoading(false);
     }
@@ -148,7 +157,7 @@ const [usersList, setUsersList] = useState<UserSummary[]>([]);
         timerProgressBar: true
       });
       fetchSOPs();
-    } catch (err) {
+    } catch {
       Swal.fire('Failed', 'Failed to delete SOP', 'error');
     }
   }

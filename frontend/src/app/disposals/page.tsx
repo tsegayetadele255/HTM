@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import Swal from "sweetalert2";
 
 interface DisposalRecord {
@@ -53,7 +53,7 @@ export default function DisposalsPage() {
         setRecords(res.data);
         setLoading(false);
       })
-      .catch(e => {
+      .catch(() => {
         setError("Failed to load disposal records");
         setLoading(false);
       });
@@ -114,7 +114,7 @@ export default function DisposalsPage() {
     setSubmitLoading(true);
     setSubmitError(null);
     try {
-      const payload: any = {
+      const payload = {
         equipmentId: form.equipmentId ? Number(form.equipmentId) : undefined,
         reason: form.reason,
         method: form.method,
@@ -142,9 +142,20 @@ export default function DisposalsPage() {
         timerProgressBar: true
       });
       fetchRecords();
-    } catch (err: any) {
-      setSubmitError(err.response?.data?.error || err.message || 'Failed to save disposal record');
-      Swal.fire('Failed', err.response?.data?.error || err.message || 'Failed to save disposal record', 'error');
+    } catch (err: unknown) {
+      if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object' && 'error' in err.response.data) {
+        const errorMsg = (err as AxiosError)?.response?.data && typeof (err as AxiosError).response?.data === 'object' && 'error' in (err as AxiosError).response?.data
+          ? ((err as AxiosError).response?.data as { error: string }).error
+          : undefined;
+        setSubmitError(errorMsg || 'Failed to save disposal record');
+        Swal.fire('Failed', errorMsg || 'Failed to save disposal record', 'error');
+      } else if (err instanceof Error) {
+        setSubmitError(err.message);
+        Swal.fire('Failed', err.message, 'error');
+      } else {
+        setSubmitError('Failed to save disposal record');
+        Swal.fire('Failed', 'Failed to save disposal record', 'error');
+      }
     } finally {
       setSubmitLoading(false);
     }
@@ -175,7 +186,7 @@ export default function DisposalsPage() {
         timerProgressBar: true
       });
       fetchRecords();
-    } catch (err) {
+    } catch {
       Swal.fire('Failed', 'Failed to delete disposal record', 'error');
     }
   }

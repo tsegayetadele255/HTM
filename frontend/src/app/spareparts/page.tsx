@@ -28,7 +28,7 @@ export default function SparePartsPage() {
         setSpareParts(res.data);
         setLoading(false);
       })
-      .catch(e => {
+      .catch(() => {
         setError("Failed to load spare parts");
         setLoading(false);
       });
@@ -94,18 +94,18 @@ export default function SparePartsPage() {
         timer: 2000,
         timerProgressBar: true
       });
-    } catch (err) {
+    } catch {
       Swal.fire('Failed', 'Failed to delete spare part', 'error');
     } finally {
       setDeleteLoading(null);
     }
   }
   interface EquipmentSummary {
-  id: number;
-  name: string;
-}
+    id: number;
+    name: string;
+  }
 
-const [equipmentList, setEquipmentList] = useState<EquipmentSummary[]>([]);
+  const [equipmentList, setEquipmentList] = useState<EquipmentSummary[]>([]);
 
   useEffect(() => {
     axios.get('http://localhost:4000/api/equipment')
@@ -137,19 +137,18 @@ const [equipmentList, setEquipmentList] = useState<EquipmentSummary[]>([]);
     setSubmitLoading(true);
     setSubmitError(null);
     try {
-      // Only include fields expected by backend and filter out empty optional fields
-      const payload: any = {
+      const payload = {
         name: form.name,
         stockLevel: form.stockLevel ? Number(form.stockLevel) : 0,
         expiryDate: form.expiryDate || undefined,
         location: form.location || undefined,
         equipmentType: form.equipmentType || undefined,
         partNumber: form.partNumber || undefined,
-        manufacturer: form.manufacturer || undefined
+        manufacturer: form.manufacturer || undefined,
+        minStockLevel: form.minStockLevel ? Number(form.minStockLevel) : undefined,
+        maxStockLevel: form.maxStockLevel ? Number(form.maxStockLevel) : undefined,
+        linkedEquipmentId: form.linkedEquipmentId ? Number(form.linkedEquipmentId) : undefined
       };
-      if (form.minStockLevel) payload.minStockLevel = Number(form.minStockLevel);
-      if (form.maxStockLevel) payload.maxStockLevel = Number(form.maxStockLevel);
-      if (form.linkedEquipmentId) payload.linkedEquipmentId = Number(form.linkedEquipmentId);
       if (editId) {
         await axios.put(`http://localhost:4000/api/spareparts/${editId}`, payload);
       } else {
@@ -166,20 +165,23 @@ const [equipmentList, setEquipmentList] = useState<EquipmentSummary[]>([]);
         timer: 2000,
         timerProgressBar: true
       });
-      // Refresh list
       setLoading(true);
       axios.get('http://localhost:4000/api/spareparts')
         .then(res => {
           setSpareParts(res.data);
           setLoading(false);
         });
-    } catch (err: any) {
-      if (err.response && err.response.data && err.response.data.error) {
-        setSubmitError(err.response.data.error);
-        Swal.fire('Failed', err.response.data.error, 'error');
-      } else {
+    } catch (err: unknown) {
+      if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object' && 'error' in err.response.data) {
+        const errorMsg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
+        setSubmitError(errorMsg || 'Failed to create spare part');
+        Swal.fire('Failed', errorMsg || 'Failed to create spare part', 'error');
+      } else if (err instanceof Error) {
         setSubmitError(err.message || 'Failed to create spare part');
         Swal.fire('Failed', err.message || 'Failed to create spare part', 'error');
+      } else {
+        setSubmitError('Failed to create spare part');
+        Swal.fire('Failed', 'Failed to create spare part', 'error');
       }
     } finally {
       setSubmitLoading(false);

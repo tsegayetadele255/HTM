@@ -45,7 +45,7 @@ const [usersList, setUsersList] = useState<UserSummary[]>([]);
         setRecords(res.data);
         setLoading(false);
       })
-      .catch(e => {
+      .catch(() => {
         setError("Failed to load training records");
         setLoading(false);
       });
@@ -98,7 +98,7 @@ const [usersList, setUsersList] = useState<UserSummary[]>([]);
     setSubmitLoading(true);
     setSubmitError(null);
     try {
-      const payload: any = {
+      const payload = {
         topic: form.topic,
         description: form.description,
         date: form.date,
@@ -123,9 +123,18 @@ const [usersList, setUsersList] = useState<UserSummary[]>([]);
         timerProgressBar: true
       });
       fetchRecords();
-    } catch (err: any) {
-      setSubmitError(err.response?.data?.error || err.message || 'Failed to save training record');
-      Swal.fire('Failed', err.response?.data?.error || err.message || 'Failed to save training record', 'error');
+    } catch (err: unknown) {
+      if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object' && 'error' in err.response.data) {
+        const errorMsg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
+        setSubmitError(errorMsg || 'Failed to save training record');
+        Swal.fire('Failed', errorMsg || 'Failed to save training record', 'error');
+      } else if (err instanceof Error) {
+        setSubmitError(err.message);
+        Swal.fire('Failed', err.message, 'error');
+      } else {
+        setSubmitError('Failed to save training record');
+        Swal.fire('Failed', 'Failed to save training record', 'error');
+      }
     } finally {
       setSubmitLoading(false);
     }
@@ -156,7 +165,7 @@ const [usersList, setUsersList] = useState<UserSummary[]>([]);
         timerProgressBar: true
       });
       fetchRecords();
-    } catch (err) {
+    } catch {
       Swal.fire('Failed', 'Failed to delete training record', 'error');
     }
   }
