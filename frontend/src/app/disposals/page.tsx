@@ -16,6 +16,16 @@ interface DisposalRecord {
   updatedAt?: string;
 }
 
+interface EquipmentSummary {
+  id: number;
+  name: string;
+}
+
+interface UserSummary {
+  id: number;
+  username: string;
+}
+
 export default function DisposalsPage() {
   const [records, setRecords] = useState<DisposalRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,8 +34,8 @@ export default function DisposalsPage() {
   const [editId, setEditId] = useState<number | null>(null);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [equipmentList, setEquipmentList] = useState<{ id: number; name: string }[]>([]);
-  const [usersList, setUsersList] = useState<{ id: number; username: string }[]>([]);
+  const [equipmentList, setEquipmentList] = useState<EquipmentSummary[]>([]);
+  const [usersList, setUsersList] = useState<UserSummary[]>([]);
   const [form, setForm] = useState({
     equipmentId: '',
     reason: '',
@@ -51,13 +61,13 @@ export default function DisposalsPage() {
 
   function fetchEquipment() {
     axios.get("http://localhost:4000/api/equipment")
-      .then(res => setEquipmentList(res.data.map((e: any) => ({ id: e.id, name: e.name }))))
+      .then(res => setEquipmentList(res.data.map((e: EquipmentSummary) => ({ id: e.id, name: e.name }))))
       .catch(() => setEquipmentList([]));
   }
 
   function fetchUsers() {
     axios.get("http://localhost:4000/api/users")
-      .then(res => setUsersList(res.data.map((u: any) => ({ id: u.id, username: u.username }))))
+      .then(res => setUsersList(res.data.map((u: UserSummary) => ({ id: u.id, username: u.username }))))
       .catch(() => setUsersList([]));
   }
 

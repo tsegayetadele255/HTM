@@ -100,7 +100,12 @@ export default function SparePartsPage() {
       setDeleteLoading(null);
     }
   }
-  const [equipmentList, setEquipmentList] = useState<{id:number, name:string}[]>([]);
+  interface EquipmentSummary {
+  id: number;
+  name: string;
+}
+
+const [equipmentList, setEquipmentList] = useState<EquipmentSummary[]>([]);
 
   useEffect(() => {
     axios.get('http://localhost:4000/api/equipment')

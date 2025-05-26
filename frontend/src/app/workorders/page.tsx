@@ -22,6 +22,16 @@ interface WorkOrder {
   solution?: string;
 }
 
+interface EquipmentSummary {
+  id: number;
+  name: string;
+}
+
+interface UserSummary {
+  id: number;
+  name: string;
+}
+
 export default function WorkOrdersPage() {
   const [workOrders, setWorkOrders] = useState<WorkOrder[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,8 +39,8 @@ export default function WorkOrdersPage() {
   const [showModal, setShowModal] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [equipmentList, setEquipmentList] = useState<{id:number, name:string}[]>([]);
-  const [usersList, setUsersList] = useState<{id:number, name:string}[]>([]);
+  const [equipmentList, setEquipmentList] = useState<EquipmentSummary[]>([]);
+  const [usersList, setUsersList] = useState<UserSummary[]>([]);
   const [form, setForm] = useState({
     description: '',
     status: '',

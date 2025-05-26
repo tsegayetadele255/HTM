@@ -127,9 +127,17 @@ export default function UsersPage() {
         timerProgressBar: true
       });
       fetchUsers();
-    } catch (err: any) {
-      setSubmitError(err.response?.data?.error || err.message || 'Failed to save user');
-      Swal.fire('Failed', err.response?.data?.error || err.message || 'Failed to save user', 'error');
+    } catch (err: unknown) {
+      if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object' && 'error' in err.response.data) {
+        setSubmitError((err as { response: { data: { error: string } } }).response.data.error);
+        Swal.fire('Failed', (err as { response: { data: { error: string } } }).response.data.error, 'error');
+      } else if (err instanceof Error) {
+        setSubmitError(err.message);
+        Swal.fire('Failed', err.message, 'error');
+      } else {
+        setSubmitError('Failed to save user');
+        Swal.fire('Failed', 'Failed to save user', 'error');
+      }
     } finally {
       setSubmitLoading(false);
     }

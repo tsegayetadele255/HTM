@@ -149,8 +149,12 @@ export default function EquipmentTable() {
       closeModal();
       setForm(defaultForm);
       fetchEquipment();
-    } catch (err: any) {
-      setSubmitError(err.message || "Failed to save equipment");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setSubmitError(err.message);
+      } else {
+        setSubmitError("Failed to save equipment");
+      }
     } finally {
       setSubmitLoading(false);
     }
@@ -196,8 +200,12 @@ export default function EquipmentTable() {
     try {
       const res = await axios.get("http://localhost:4000/api/equipment");
       setEquipment(res.data);
-    } catch (err: any) {
-      setError(err.message || "Unknown error");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Unknown error");
+      }
     } finally {
       setLoading(false);
     }

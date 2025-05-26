@@ -21,7 +21,12 @@ export default function SOPsPage() {
   const [editId, setEditId] = useState<number | null>(null);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [usersList, setUsersList] = useState<{ id: number; username: string }[]>([]);
+  interface UserSummary {
+  id: number;
+  username: string;
+}
+
+const [usersList, setUsersList] = useState<UserSummary[]>([]);
   const [form, setForm] = useState({
     title: '',
     content: '',
@@ -44,7 +49,7 @@ export default function SOPsPage() {
 
   function fetchUsers() {
     axios.get("http://localhost:4000/api/users")
-      .then(res => setUsersList(res.data.map((u: any) => ({ id: u.id, username: u.username }))))
+      .then(res => setUsersList(res.data.map((u: UserSummary) => ({ id: u.id, username: u.username }))))
       .catch(() => setUsersList([]));
   }
 
