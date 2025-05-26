@@ -11,5 +11,6 @@ function asyncHandler(fn) {
 router.get('/', asyncHandler(auditLogController_1.getAllAuditLogs));
 router.post('/', asyncHandler(auditLogController_1.createAuditLog));
 router.get('/:id', asyncHandler(auditLogController_1.getOneAuditLog));
+router.put('/:id', asyncHandler(auditLogController_1.updateAuditLog));
 router.delete('/:id', asyncHandler(auditLogController_1.deleteAuditLog));
 exports.default = router;
