@@ -132,7 +132,7 @@ export default function DashboardPage() {
     <div style={{ padding: "2.5rem 0", width: "100%", background: "#f7f8fa", minHeight: "100vh" }}>
       {/* Branding and Welcome */}
       <div style={{ display: "flex", alignItems: "center", gap: 36, marginBottom: 38 }}>
-        <Image src="/vascular-cmms-logo.png" alt="Vascular CMMS Logo" style={{ width: 64, height: 64, borderRadius: 18, background: '#fff', boxShadow: '0 2px 8px #0001' }} />
+        <Image src="/vascular-cmms-logo.png" alt="Vascular CMMS Logo" width={64} height={64} style={{ borderRadius: 18, background: '#fff', boxShadow: '0 2px 8px #0001' }} />
         <div>
           <h1 style={{ margin: 0, fontSize: 34, fontWeight: 800, letterSpacing: 0.5, color: "#2d5be3" }}>Vascular Equipment CMMS</h1>
           <div style={{ fontSize: 18, color: "#3a3c4f", marginTop: 8, fontWeight: 500 }}>
