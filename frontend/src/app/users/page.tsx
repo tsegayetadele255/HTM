@@ -50,7 +50,7 @@ export default function UsersPage() {
         setUsers(res.data);
         setLoading(false);
       })
-      .catch(e => {
+      .catch(() => {
         setError("Failed to load users");
         setLoading(false);
       });
@@ -100,7 +100,7 @@ export default function UsersPage() {
     setSubmitLoading(true);
     setSubmitError(null);
     try {
-      const payload: any = {
+      const payload: { username: string; fullName: string; email: string; phone: string; department: string; role: string; isActive: boolean; password?: string } = {
         username: form.username,
         fullName: form.fullName,
         email: form.email,

@@ -75,7 +75,7 @@ export default function WorkOrdersPage() {
         setWorkOrders(res.data);
         setLoading(false);
       })
-      .catch(e => {
+      .catch(() => {
         setError("Failed to load work orders");
         setLoading(false);
       });
@@ -92,7 +92,19 @@ export default function WorkOrdersPage() {
     setSubmitLoading(true);
     setSubmitError(null);
     try {
-      const payload: any = {
+      const payload: {
+        description: string;
+        status: string;
+        priority: string;
+        maintenanceType: string;
+        repairCost?: number;
+        repairTime: string;
+        reason: string;
+        solution: string;
+        assignedTechnicianId?: number;
+        equipmentId?: number;
+        faultReportedById?: number;
+      } = {
         description: form.description,
         status: form.status,
         priority: form.priority,
