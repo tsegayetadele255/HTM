@@ -51,13 +51,13 @@ export default function CalibrationPage() {
 
   function fetchEquipment() {
     axios.get("http://localhost:4000/api/equipment")
-      .then(res => setEquipmentList(res.data.map((e: any) => ({ id: e.id, name: e.name }))))
+      .then(res => setEquipmentList(res.data.map((e: { id: number; name: string }) => ({ id: e.id, name: e.name }))))
       .catch(() => setEquipmentList([]));
   }
 
   function fetchUsers() {
     axios.get("http://localhost:4000/api/users")
-      .then(res => setUsersList(res.data.map((u: any) => ({ id: u.id, username: u.username }))))
+      .then(res => setUsersList(res.data.map((u: { id: number; username: string }) => ({ id: u.id, username: u.username }))))
       .catch(() => setUsersList([]));
   }
 

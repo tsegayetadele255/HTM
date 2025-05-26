@@ -45,7 +45,7 @@ export default function AuditLogsPage() {
 
   function fetchUsers() {
     axios.get("http://localhost:4000/api/users")
-      .then(res => setUsersList(res.data.map((u: any) => ({ id: u.id, username: u.username }))))
+      .then(res => setUsersList(res.data.map((u: { id: number; username: string }) => ({ id: u.id, username: u.username }))))
       .catch(() => setUsersList([]));
   }
 
