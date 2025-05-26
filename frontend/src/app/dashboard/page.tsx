@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import axios from "axios";
 
 const CARD_CONFIG = [
@@ -72,7 +73,7 @@ export default function DashboardPage() {
         // Debug: Log equipment data
         console.log('Fetched equipment:', equipment);
         // Scheduled calibrations: count equipment with nextCalibrationDate in the future
-        const scheduledCalibrations = equipment.filter((e: unknown) => e.nextCalibrationDate && new Date(e.nextCalibrationDate) > new Date()).length;
+        const scheduledCalibrations = equipment.filter((e: any) => e.nextCalibrationDate && new Date(e.nextCalibrationDate) > new Date()).length;
         // Pie chart values by status
         // Flexible status mapping for various possible status values
         const statusMap: Record<string, "Active" | "Inactive" | "Under Maintenance" | "Decommissioned"> = {
@@ -91,7 +92,7 @@ export default function DashboardPage() {
           // Add more mappings as needed
         };
         const statusCounts: Record<string, number> = { Active: 0, Inactive: 0, "Under Maintenance": 0, Decommissioned: 0 };
-        equipment.forEach((e: unknown) => {
+        equipment.forEach((e: any) => {
           const rawStatus = (e.status || "").toString().trim();
           const mappedStatus = statusMap[rawStatus];
           if (mappedStatus) {
@@ -102,8 +103,8 @@ export default function DashboardPage() {
         });
         setSummaryData([
           { value: equipment.length },
-          { value: workOrders.filter((w: unknown) => w.status === 'Active' || w.status === 'Open').length },
-          { value: procurements.filter((p: unknown) => p.status === 'Pending').length },
+          { value: workOrders.filter((w: any) => w.status === 'Active' || w.status === 'Open').length },
+          { value: procurements.filter((p: any) => p.status === 'Pending').length },
           { value: incidents.length },
           { value: scheduledCalibrations },
         ]);
@@ -114,10 +115,12 @@ export default function DashboardPage() {
           { label: "Decommissioned", value: statusCounts.Decommissioned, color: PIE_COLORS.Decommissioned },
         ]);
 
-      } catch {
-        setError("Failed to load dashboard data");
-      }
-        setError("Failed to load dashboard data");
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Failed to load dashboard data");
+        }
       } finally {
         setLoading(false);
       }

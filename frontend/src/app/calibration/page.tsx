@@ -138,9 +138,6 @@ export default function CalibrationPage() {
         setSubmitError('Failed to save calibration record');
         Swal.fire('Failed', 'Failed to save calibration record', 'error');
       }
-    
-      setSubmitError(err.response?.data?.error || err.message || 'Failed to save calibration record');
-      Swal.fire('Failed', err.response?.data?.error || err.message || 'Failed to save calibration record', 'error');
     } finally {
       setSubmitLoading(false);
     }

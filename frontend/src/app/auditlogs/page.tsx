@@ -122,9 +122,6 @@ export default function AuditLogsPage() {
         setSubmitError('Failed to save audit log');
         Swal.fire('Failed', 'Failed to save audit log', 'error');
       }
-    
-      setSubmitError(err.response?.data?.error || err.message || 'Failed to save audit log');
-      Swal.fire('Failed', err.response?.data?.error || err.message || 'Failed to save audit log', 'error');
     } finally {
       setSubmitLoading(false);
     }
