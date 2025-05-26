@@ -18,7 +18,6 @@ export const metadata: Metadata = {
 };
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 
 function Sidebar() {
   const tabs = [
