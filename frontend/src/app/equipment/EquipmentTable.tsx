@@ -187,8 +187,12 @@ export default function EquipmentTable() {
           timer: 2000,
           timerProgressBar: true
         });
-      } catch {
-        Swal.fire('Failed', 'Failed to delete equipment', 'error');
+      } catch (err: any) {
+        let msg = 'Failed to delete equipment';
+        if (err.response && err.response.data && err.response.data.error) {
+          msg = err.response.data.error;
+        }
+        Swal.fire('Failed', msg, 'error');
       } finally {
         setDeleteLoading(null);
       }

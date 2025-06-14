@@ -55,10 +55,67 @@ export default function WorkOrdersPage() {
     solution: ''
   });
 
+  const [editId, setEditId] = useState<number | null>(null);
+
   function openModal() {
+    setEditId(null);
     setForm({ description: '', status: '', priority: '', assignedTechnicianId: '', equipmentId: '', faultReportedById: '', maintenanceType: '', repairCost: '', repairTime: '', reason: '', solution: '' });
     setShowModal(true);
     setSubmitError(null);
+  }
+
+  function openEditModal(wo: WorkOrder) {
+    setEditId(wo.id);
+    setForm({
+      description: wo.description || '',
+      status: wo.status || '',
+      priority: wo.priority || '',
+      assignedTechnicianId: wo.assignedTechnician?.id?.toString() || '',
+      equipmentId: wo.equipment?.id?.toString() || '',
+      faultReportedById: wo.faultReportedBy?.id?.toString() || '',
+      maintenanceType: wo.maintenanceType || '',
+      repairCost: wo.repairCost?.toString() || '',
+      repairTime: wo.repairTime || '',
+      reason: wo.reason || '',
+      solution: wo.solution || ''
+    });
+    setShowModal(true);
+    setSubmitError(null);
+  }
+
+  async function handleDelete(id: number) {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: `Work order will be deleted!`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true
+    });
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/workorders/${id}`);
+        fetchWorkOrders();
+        Swal.fire({
+          toast: true,
+          position: 'bottom',
+          icon: 'success',
+          title: 'Work order deleted',
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true
+        });
+      } catch (err: any) {
+        let msg = 'Failed to delete work order';
+        if (err.response && err.response.data && err.response.data.error) {
+          msg = err.response.data.error;
+        }
+        Swal.fire('Failed', msg, 'error');
+      }
+    }
   }
   function closeModal() {
     setShowModal(false);
@@ -117,14 +174,18 @@ export default function WorkOrdersPage() {
       if (form.assignedTechnicianId) payload.assignedTechnicianId = Number(form.assignedTechnicianId);
       if (form.equipmentId) payload.equipmentId = Number(form.equipmentId);
       if (form.faultReportedById) payload.faultReportedById = Number(form.faultReportedById);
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/workorders`, payload);
+      if (editId) {
+        await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/workorders/${editId}`, payload);
+      } else {
+        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/workorders`, payload);
+      }
       closeModal();
       setForm({ description: '', status: '', priority: '', assignedTechnicianId: '', equipmentId: '', faultReportedById: '', maintenanceType: '', repairCost: '', repairTime: '', reason: '', solution: '' });
       Swal.fire({
         toast: true,
         position: 'bottom',
         icon: 'success',
-        title: 'Work order created',
+        title: editId ? 'Work order updated' : 'Work order created',
         showConfirmButton: false,
         timer: 2000,
         timerProgressBar: true
@@ -222,7 +283,7 @@ export default function WorkOrdersPage() {
           <table style={{ minWidth: 1400, width: '100%', borderCollapse: 'separate', borderSpacing: 0, borderRadius: 16, overflow: 'hidden' }}>
             <thead>
               <tr style={{ background: '#f5f6fa', textAlign: 'left' }}>
-                {["Description", "Status", "Priority", "Technician", "Equipment", "Reporter", "Created", "Updated", "Completed", "Type", "Repair Cost", "Repair Time", "Reason", "Solution"].map((header, i) => (
+                {["Description", "Status", "Priority", "Technician", "Equipment", "Reporter", "Created", "Updated", "Completed", "Type", "Repair Cost", "Repair Time", "Reason", "Solution", "Actions"].map((header, i) => (
                   <th
                     key={header}
                     style={{
@@ -236,7 +297,7 @@ export default function WorkOrdersPage() {
                       fontSize: 15,
                       borderBottom: '1.5px solid #e5e7ef',
                       borderTopLeftRadius: i === 0 ? 16 : 0,
-                      borderTopRightRadius: i === 13 ? 16 : 0
+                      borderTopRightRadius: i === 14 ? 16 : 0
                     }}
                   >
                     {header}
@@ -246,7 +307,7 @@ export default function WorkOrdersPage() {
             </thead>
             <tbody>
               {workOrders.length === 0 ? (
-                <tr><td colSpan={14} style={{ textAlign: 'center', padding: 32, color: '#999', background: '#fafbfc' }}>No work orders found.</td></tr>
+                <tr><td colSpan={15} style={{ textAlign: 'center', padding: 32, color: '#999', background: '#fafbfc' }}>No work orders found.</td></tr>
               ) : (
                 workOrders.map((wo, idx) => (
                   <tr key={wo.id} style={{
@@ -268,6 +329,16 @@ export default function WorkOrdersPage() {
                     <td style={{ padding: 10 }}>{wo.repairTime || '-'}</td>
                     <td style={{ padding: 10 }}>{wo.reason || '-'}</td>
                     <td style={{ padding: 10 }}>{wo.solution || '-'}</td>
+                    <td style={{ padding: 10 }}>
+                      <button
+                        style={{ marginRight: 8, padding: '4px 12px', background: '#f6c700', color: '#222', border: 'none', borderRadius: 6, fontWeight: 500, cursor: 'pointer' }}
+                        onClick={() => openEditModal(wo)}
+                      >Edit</button>
+                      <button
+                        style={{ padding: '4px 12px', background: '#e32d2d', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 500, cursor: 'pointer' }}
+                        onClick={() => handleDelete(wo.id)}
+                      >Delete</button>
+                    </td>
                   </tr>
                 ))
               )}
